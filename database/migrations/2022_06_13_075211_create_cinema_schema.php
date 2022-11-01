@@ -36,7 +36,63 @@ class CreateCinemaSchema extends Migration
      */
     public function up()
     {
-        throw new \Exception('implement in coding task 4, you can ignore this exception if you are just running the initial migrations.');
+        /*List of Films*/
+        Schema::create('films',function ($table){
+            $table->increments('id');
+            $table->string('film_name');
+            $table->timestamps();
+        });
+
+
+        /*Seats*/
+
+        Schema::create('seats',function ($table){
+            $table->increments('id');
+            $table->enum('seat_type',['vip','couple','super_vip','other'])->defult('other');
+            $table->timestamps();
+        });
+
+        /*Seats Pricing*/
+        Schema::create('seats_pricing',function ($table){
+            $table->increments('id');
+            $table->decimal('price',2);
+            $table->integer('seat_id')->unsigned();
+            $table->foreign('seat_id')->references('id')->on('seats')->onDelete('cascade');
+        });
+
+        /*Films Showrooms*/
+        Schema::create('films_showrooms',function ($table){
+            $table->increments('id');
+            $table->string('showroom_name');
+            $table->integer('film_id')->unsigned();
+            $table->foreign('film_id')->references('id')->on('films')->onDelete('cascade');
+            $table->integer('seat_id')->unsigned();
+            $table->foreign('seat_id')->references('id')->on('seats')->onDelete('cascade');
+            $table->timestamps();
+        });
+
+
+
+        /*Films Time*/
+        Schema::create('films_time',function ($table){
+            $table->increments('id');
+            $table->dateTime('start');
+            $table->dateTime('end');
+        });
+
+
+        /*Film show rooms film Time*/
+
+        Schema::create('booking',function ($table){
+           $table->increments('id');
+            $table->integer('showroom_id')->unsigned();
+            $table->foreign('showroom_id')->references('id')->on('films_showrooms')->onDelete('cascade');
+            $table->integer('films_time_id')->unsigned();
+            $table->foreign('films_time_id')->references('id')->on('films_time')->onDelete('cascade');
+
+        });
+
+
     }
 
     /**
